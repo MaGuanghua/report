@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hanthink.report.mapper.StatusShowMapper">
+
+	<select id="statustimeShow" resultType="com.hanthink.report.pojo.StatusDomain"
+		parameterType="com.hanthink.report.pojo.StatusDomain">
+		SELECT
+
+		a0.equitmentstatus ,
+
+		(
+		SUM(
+		UNIX_TIMESTAMP(a0.endtime) -
+		UNIX_TIMESTAMP(a0.starttime)
+		)
+		)
+		statustime
+		FROM
+		pp_press_status a0
+		WHERE
+		1 =
+		1
+
+		<if test="startprodate != null and startprodate != ''">
+			AND a0.prodate BETWEEN#{startprodate}
+		</if>
+
+		<if test="endprodate != null and endprodate != ''">
+			AND #{endprodate}
+		</if>
+
+
+		<if test="proline != null and proline != ''">
+			AND a0.proline = #{proline}
+		</if>
+
+
+		<if test="shift != null and shift != ''">
+			AND a0.shift = #{shift}
+		</if>
+
+		GROUP BY
+
+		a0.equitmentstatus
+
+	</select>
+
+
+</mapper>

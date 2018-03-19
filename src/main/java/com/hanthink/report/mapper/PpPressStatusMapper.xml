@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanthink.report.mapper.PpPressStatusMapper">
+
+	<!-- AllProline -->
+	<select id="selectAllProline" resultType="com.hanthink.report.pojo.PpPressStatus">
+		SELECT proline FROM
+		pp_press_status GROUP BY proline
+	</select>
+
+	<!-- AllShift -->
+	<select id="selectAllShift" resultType="com.hanthink.report.pojo.PpPressStatus">
+		SELECT shift FROM
+		pp_press_status GROUP BY shift
+
+	</select>
+
+	<!-- AllMould -->
+	<select id="selectAllMould" resultType="com.hanthink.report.pojo.PpPressStatus">
+		SELECT mould FROM
+		pp_press_status GROUP BY mould
+	</select>
+
+	<!-- AllProdate -->
+	<select id="selectAllProdate" resultType="com.hanthink.report.pojo.PpPressStatus">
+		SELECT prodate FROM
+		pp_press_status GROUP BY prodate
+	</select>
+
+
+	<select id="getAdctList" resultType="com.hanthink.report.pojo.AdctResultDomain">
+		SELECT
+		C.dateYmd,
+		<!-- <if test="mould != null and mould != ''"> -->
+			C.mould,
+		<!-- </if>
+		<if test="proline != null and proline != ''"> -->
+			c.proline,
+		<!-- </if>
+		<if test="shift != null and shift != ''"> -->
+			c.shift,
+		<!-- </if> -->
+		sum(c.num) totaltime,
+		count(1) counter
+		FROM
+		(
+		SELECT
+		<if test="dayFlag != null and dayFlag != ''">
+			DATE_FORMAT(a0.starttime, '%Y%m') dateYmd,
+		</if>
+		<if test="dayFlag == null or dayFlag == ''">
+			DATE_FORMAT(a0.starttime, '%Y%m%d') dateYmd,
+		</if>
+		<!-- <if test="mould != null and mould != ''"> -->
+			a0.mould,
+		<!-- </if>
+		<if test="proline != null and proline != ''"> -->
+			a0.proline,
+		<!-- </if>
+		<if test="shift != null and shift != ''"> -->
+			a0.shift,
+		<!-- </if> -->
+		a0.starttime,
+		a0.endtime,
+		UNIX_TIMESTAMP(a0.endtime) -
+		UNIX_TIMESTAMP(a0.starttime) num
+		FROM
+		pp_press_status a0
+		WHERE
+		
+		equitmentstatus = #{equitmentstatus}
+		<if test="proline != null and proline != ''">
+			AND a0.proline = #{proline}
+		</if>
+		<if test="shift != null and shift != ''">
+			AND a0.shift = #{shift}
+		</if>
+		<if test="mould != null and mould != ''">
+			AND a0.mould = #{mould}
+		</if>
+		<if test="day != null and day != ''">
+			AND a0.prodate BETWEEN #{day}
+		</if>
+		<if test="endday != null and endday != ''">
+			AND #{endday}
+		</if>
+
+
+
+		) C
+		GROUP BY
+		<if test="mould != null and mould != ''">
+			C.mould,
+		</if>
+		<if test="proline != null and proline != ''">
+			C.proline,
+		</if>
+		<if test="shift != null and shift != ''">
+			C.shift,
+		</if>
+		c.dateYmd
+	</select>
+
+	<select id="getAdctList0" resultType="com.hanthink.report.pojo.AdctResultDomain">
+		SELECT
+		C.dateYmd,
+		C.mould,
+		c.proline,
+		c.shift,
+		sum(c.num) totaltime,
+		count(1) counter
+		FROM
+		(
+		SELECT
+		DATE_FORMAT(a0.starttime, '%Y%m%d') dateYmd,
+		a0.mould,
+		a0.proline,
+		a0.shift,
+		a0.starttime,
+		a0.endtime,
+		UNIX_TIMESTAMP(a0.endtime) -
+		UNIX_TIMESTAMP(a0.starttime) num
+		FROM
+		pp_press_status a0
+		WHERE
+		equitmentstatus = #{equitmentstatus} AND a0.proline = #{proline}
+		) C
+		GROUP BY
+		C.mould,C.proline,C.shift,c.dateYmd
+	</select>
+</mapper>
